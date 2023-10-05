@@ -1,0 +1,411 @@
+
+Mater_SPI_test.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00800100  00000280  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         0000022c  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .comment      00000030  00000000  00000000  00000280  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000002b0  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000038  00000000  00000000  000002ec  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000009f1  00000000  00000000  00000324  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000716  00000000  00000000  00000d15  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000003e5  00000000  00000000  0000142b  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000070  00000000  00000000  00001810  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000478  00000000  00000000  00001880  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000365  00000000  00000000  00001cf8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000028  00000000  00000000  0000205d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
+   4:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+   8:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+   c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  10:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  14:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  18:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  1c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  20:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  24:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  28:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  2c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  30:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  34:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  38:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  3c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  40:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  44:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  48:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  4c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  50:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  54:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  58:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  5c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  60:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  64:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+
+00000068 <__ctors_end>:
+  68:	11 24       	eor	r1, r1
+  6a:	1f be       	out	0x3f, r1	; 63
+  6c:	cf ef       	ldi	r28, 0xFF	; 255
+  6e:	d8 e0       	ldi	r29, 0x08	; 8
+  70:	de bf       	out	0x3e, r29	; 62
+  72:	cd bf       	out	0x3d, r28	; 61
+  74:	0e 94 85 00 	call	0x10a	; 0x10a <main>
+  78:	0c 94 14 01 	jmp	0x228	; 0x228 <_exit>
+
+0000007c <__bad_interrupt>:
+  7c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000080 <_Z14SPI_MasterInitv>:
+
+
+void SPI_MasterInit()
+{
+	/* Set MOSI, CS and SCK output, all others input */
+	DDR_SPI = (1<<CS)|(1<<MOSI)|(1<<SCK)|(1<<CS_SoftCode);
+  80:	8e e2       	ldi	r24, 0x2E	; 46
+  82:	84 b9       	out	0x04, r24	; 4
+	
+	/* Enable SPI, Master, (j'ai aussi fuck avec le clock)set clock rate fck/16 */
+	//SPCR = (1<<SPE)|(1<<MSTR)|(1<<CPOL)|(1<<CPHA)|(1<<SPR1);
+	/* test pour voir si fonction avec les 3 chip sans la saleae */
+	SPCR = (1<<SPE)|(1<<MSTR);
+  84:	80 e5       	ldi	r24, 0x50	; 80
+  86:	8c bd       	out	0x2c, r24	; 44
+	
+	/* pour tous les mettres passif (les Slaves) */
+	PORTB |= (1<<CS)|(1<<CS_SoftCode);
+  88:	85 b1       	in	r24, 0x05	; 5
+  8a:	86 60       	ori	r24, 0x06	; 6
+  8c:	85 b9       	out	0x05, r24	; 5
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  8e:	83 ec       	ldi	r24, 0xC3	; 195
+  90:	99 e0       	ldi	r25, 0x09	; 9
+  92:	01 97       	sbiw	r24, 0x01	; 1
+  94:	f1 f7       	brne	.-4      	; 0x92 <_Z14SPI_MasterInitv+0x12>
+  96:	00 c0       	rjmp	.+0      	; 0x98 <_Z14SPI_MasterInitv+0x18>
+  98:	00 00       	nop
+  9a:	08 95       	ret
+
+0000009c <_Z26SPI_MasterTransmit_Receivec>:
+	_delay_ms(10);
+}
+char SPI_MasterTransmit_Receive(char cData)
+{	
+	/* Start transmission */
+	SPDR = cData;
+  9c:	8e bd       	out	0x2e, r24	; 46
+
+	/* Wait for transmission complete */
+	while(!(SPSR & (1<<SPIF))); //le ! veux dire while not (so basicly... SPIF veut dire que les 8 bytes ont ete Read/Wright donc cest basicly un loop qui t'empeche d'envoyer plus information avant que le 8 bytes a été envoyé)
+  9e:	0d b4       	in	r0, 0x2d	; 45
+  a0:	07 fe       	sbrs	r0, 7
+  a2:	fd cf       	rjmp	.-6      	; 0x9e <_Z26SPI_MasterTransmit_Receivec+0x2>
+
+	return SPDR;
+  a4:	8e b5       	in	r24, 0x2e	; 46
+}
+  a6:	08 95       	ret
+
+000000a8 <_Z5Blinkv>:
+void Blink(){
+	
+	PORTC |= (1<<0);
+  a8:	88 b1       	in	r24, 0x08	; 8
+  aa:	81 60       	ori	r24, 0x01	; 1
+  ac:	88 b9       	out	0x08, r24	; 8
+  ae:	2f e3       	ldi	r18, 0x3F	; 63
+  b0:	8d e0       	ldi	r24, 0x0D	; 13
+  b2:	93 e0       	ldi	r25, 0x03	; 3
+  b4:	21 50       	subi	r18, 0x01	; 1
+  b6:	80 40       	sbci	r24, 0x00	; 0
+  b8:	90 40       	sbci	r25, 0x00	; 0
+  ba:	e1 f7       	brne	.-8      	; 0xb4 <_Z5Blinkv+0xc>
+  bc:	00 c0       	rjmp	.+0      	; 0xbe <_Z5Blinkv+0x16>
+  be:	00 00       	nop
+	_delay_ms(1000);
+	PORTC &= ~(1<<0);
+  c0:	88 b1       	in	r24, 0x08	; 8
+  c2:	8e 7f       	andi	r24, 0xFE	; 254
+  c4:	88 b9       	out	0x08, r24	; 8
+  c6:	2f e3       	ldi	r18, 0x3F	; 63
+  c8:	8d e0       	ldi	r24, 0x0D	; 13
+  ca:	93 e0       	ldi	r25, 0x03	; 3
+  cc:	21 50       	subi	r18, 0x01	; 1
+  ce:	80 40       	sbci	r24, 0x00	; 0
+  d0:	90 40       	sbci	r25, 0x00	; 0
+  d2:	e1 f7       	brne	.-8      	; 0xcc <_Z5Blinkv+0x24>
+  d4:	00 c0       	rjmp	.+0      	; 0xd6 <_Z5Blinkv+0x2e>
+  d6:	00 00       	nop
+	_delay_ms(1000);
+	PORTC |= (1<<1);
+  d8:	88 b1       	in	r24, 0x08	; 8
+  da:	82 60       	ori	r24, 0x02	; 2
+  dc:	88 b9       	out	0x08, r24	; 8
+  de:	2f e3       	ldi	r18, 0x3F	; 63
+  e0:	8d e0       	ldi	r24, 0x0D	; 13
+  e2:	93 e0       	ldi	r25, 0x03	; 3
+  e4:	21 50       	subi	r18, 0x01	; 1
+  e6:	80 40       	sbci	r24, 0x00	; 0
+  e8:	90 40       	sbci	r25, 0x00	; 0
+  ea:	e1 f7       	brne	.-8      	; 0xe4 <_Z5Blinkv+0x3c>
+  ec:	00 c0       	rjmp	.+0      	; 0xee <_Z5Blinkv+0x46>
+  ee:	00 00       	nop
+	_delay_ms(1000);
+	PORTC &= ~(1<<1);
+  f0:	88 b1       	in	r24, 0x08	; 8
+  f2:	8d 7f       	andi	r24, 0xFD	; 253
+  f4:	88 b9       	out	0x08, r24	; 8
+  f6:	2f e3       	ldi	r18, 0x3F	; 63
+  f8:	8d e0       	ldi	r24, 0x0D	; 13
+  fa:	93 e0       	ldi	r25, 0x03	; 3
+  fc:	21 50       	subi	r18, 0x01	; 1
+  fe:	80 40       	sbci	r24, 0x00	; 0
+ 100:	90 40       	sbci	r25, 0x00	; 0
+ 102:	e1 f7       	brne	.-8      	; 0xfc <_Z5Blinkv+0x54>
+ 104:	00 c0       	rjmp	.+0      	; 0x106 <_Z5Blinkv+0x5e>
+ 106:	00 00       	nop
+ 108:	08 95       	ret
+
+0000010a <main>:
+	_delay_ms(1000);
+	
+}
+
+int main(void)
+{
+ 10a:	0f 93       	push	r16
+ 10c:	1f 93       	push	r17
+ 10e:	cf 93       	push	r28
+ 110:	df 93       	push	r29
+ 112:	00 d0       	rcall	.+0      	; 0x114 <main+0xa>
+ 114:	1f 92       	push	r1
+ 116:	cd b7       	in	r28, 0x3d	; 61
+ 118:	de b7       	in	r29, 0x3e	; 62
+	/* mettre les deux portes en sortie */
+	DDRC |= (1<<0)|(1<<1);
+ 11a:	87 b1       	in	r24, 0x07	; 7
+ 11c:	83 60       	ori	r24, 0x03	; 3
+ 11e:	87 b9       	out	0x07, r24	; 7
+	/* test de lumière pour confirmer */
+	Blink();
+ 120:	0e 94 54 00 	call	0xa8	; 0xa8 <_Z5Blinkv>
+	/* initialiser le master SPI */
+	SPI_MasterInit();
+ 124:	0e 94 40 00 	call	0x80	; 0x80 <_Z14SPI_MasterInitv>
+	
+	/* pour envoyer plusieurs char test */
+	char Master_data[] = {0x55,0x33,0x44};
+ 128:	85 e5       	ldi	r24, 0x55	; 85
+ 12a:	89 83       	std	Y+1, r24	; 0x01
+ 12c:	83 e3       	ldi	r24, 0x33	; 51
+ 12e:	8a 83       	std	Y+2, r24	; 0x02
+ 130:	84 e4       	ldi	r24, 0x44	; 68
+ 132:	8b 83       	std	Y+3, r24	; 0x03
+	
+	//ici cest i<4 cuz quand tu envoie au slave et il change sont registre SPDR, il va etre envoié dans le prochain echange de SPDR, comme si il y avait un delay de 1 char quand le slave parle au master
+	for (int i=0; i<4; i++)
+ 134:	00 e0       	ldi	r16, 0x00	; 0
+ 136:	10 e0       	ldi	r17, 0x00	; 0
+ 138:	04 30       	cpi	r16, 0x04	; 4
+ 13a:	11 05       	cpc	r17, r1
+ 13c:	9c f5       	brge	.+102    	; 0x1a4 <main+0x9a>
+	{
+		PORTB &= ~(1<<CS); //pour activer slave 1
+ 13e:	85 b1       	in	r24, 0x05	; 5
+ 140:	8b 7f       	andi	r24, 0xFB	; 251
+ 142:	85 b9       	out	0x05, r24	; 5
+ 144:	83 ec       	ldi	r24, 0xC3	; 195
+ 146:	99 e0       	ldi	r25, 0x09	; 9
+ 148:	01 97       	sbiw	r24, 0x01	; 1
+ 14a:	f1 f7       	brne	.-4      	; 0x148 <main+0x3e>
+ 14c:	00 c0       	rjmp	.+0      	; 0x14e <main+0x44>
+ 14e:	00 00       	nop
+		_delay_ms(10);
+		
+		char data = SPI_MasterTransmit_Receive(Master_data[i]); 
+ 150:	e1 e0       	ldi	r30, 0x01	; 1
+ 152:	f0 e0       	ldi	r31, 0x00	; 0
+ 154:	ec 0f       	add	r30, r28
+ 156:	fd 1f       	adc	r31, r29
+ 158:	e0 0f       	add	r30, r16
+ 15a:	f1 1f       	adc	r31, r17
+ 15c:	80 81       	ld	r24, Z
+ 15e:	0e 94 4e 00 	call	0x9c	; 0x9c <_Z26SPI_MasterTransmit_Receivec>
+			
+		if(data == 0x51){
+ 162:	81 35       	cpi	r24, 0x51	; 81
+ 164:	19 f4       	brne	.+6      	; 0x16c <main+0x62>
+			PORTC |= (1<<0);
+ 166:	98 b1       	in	r25, 0x08	; 8
+ 168:	91 60       	ori	r25, 0x01	; 1
+ 16a:	98 b9       	out	0x08, r25	; 8
+		}
+		if(data == 0x31){
+ 16c:	81 33       	cpi	r24, 0x31	; 49
+ 16e:	19 f4       	brne	.+6      	; 0x176 <main+0x6c>
+			PORTC |= (1<<1);
+ 170:	98 b1       	in	r25, 0x08	; 8
+ 172:	92 60       	ori	r25, 0x02	; 2
+ 174:	98 b9       	out	0x08, r25	; 8
+		}
+		if(data == 0xAA){
+ 176:	8a 3a       	cpi	r24, 0xAA	; 170
+ 178:	31 f4       	brne	.+12     	; 0x186 <main+0x7c>
+			PORTC &= ~(1<<0);
+ 17a:	88 b1       	in	r24, 0x08	; 8
+ 17c:	8e 7f       	andi	r24, 0xFE	; 254
+ 17e:	88 b9       	out	0x08, r24	; 8
+			PORTC &= ~(1<<1);
+ 180:	88 b1       	in	r24, 0x08	; 8
+ 182:	8d 7f       	andi	r24, 0xFD	; 253
+ 184:	88 b9       	out	0x08, r24	; 8
+		}
+		PORTB |= (1<<CS); //pour mettre slave 1 a passive
+ 186:	85 b1       	in	r24, 0x05	; 5
+ 188:	84 60       	ori	r24, 0x04	; 4
+ 18a:	85 b9       	out	0x05, r24	; 5
+ 18c:	9f e3       	ldi	r25, 0x3F	; 63
+ 18e:	2d e0       	ldi	r18, 0x0D	; 13
+ 190:	83 e0       	ldi	r24, 0x03	; 3
+ 192:	91 50       	subi	r25, 0x01	; 1
+ 194:	20 40       	sbci	r18, 0x00	; 0
+ 196:	80 40       	sbci	r24, 0x00	; 0
+ 198:	e1 f7       	brne	.-8      	; 0x192 <main+0x88>
+ 19a:	00 c0       	rjmp	.+0      	; 0x19c <main+0x92>
+ 19c:	00 00       	nop
+	
+	/* pour envoyer plusieurs char test */
+	char Master_data[] = {0x55,0x33,0x44};
+	
+	//ici cest i<4 cuz quand tu envoie au slave et il change sont registre SPDR, il va etre envoié dans le prochain echange de SPDR, comme si il y avait un delay de 1 char quand le slave parle au master
+	for (int i=0; i<4; i++)
+ 19e:	0f 5f       	subi	r16, 0xFF	; 255
+ 1a0:	1f 4f       	sbci	r17, 0xFF	; 255
+ 1a2:	ca cf       	rjmp	.-108    	; 0x138 <main+0x2e>
+ 1a4:	00 e0       	ldi	r16, 0x00	; 0
+ 1a6:	10 e0       	ldi	r17, 0x00	; 0
+		}
+		PORTB |= (1<<CS); //pour mettre slave 1 a passive
+		_delay_ms(1000);
+	}
+	
+	for (int i=0; i<4; i++)
+ 1a8:	04 30       	cpi	r16, 0x04	; 4
+ 1aa:	11 05       	cpc	r17, r1
+ 1ac:	9c f5       	brge	.+102    	; 0x214 <main+0x10a>
+	{
+		PORTB &= ~(1<<CS_SoftCode);//pour activer slave 2
+ 1ae:	85 b1       	in	r24, 0x05	; 5
+ 1b0:	8d 7f       	andi	r24, 0xFD	; 253
+ 1b2:	85 b9       	out	0x05, r24	; 5
+ 1b4:	83 ec       	ldi	r24, 0xC3	; 195
+ 1b6:	99 e0       	ldi	r25, 0x09	; 9
+ 1b8:	01 97       	sbiw	r24, 0x01	; 1
+ 1ba:	f1 f7       	brne	.-4      	; 0x1b8 <main+0xae>
+ 1bc:	00 c0       	rjmp	.+0      	; 0x1be <main+0xb4>
+ 1be:	00 00       	nop
+		_delay_ms(10); //ici le delay est important cuz sinon il active le slave en meme temps que le slave veux parler so ca fuck up
+		
+		char data = SPI_MasterTransmit_Receive(Master_data[i]);
+ 1c0:	e1 e0       	ldi	r30, 0x01	; 1
+ 1c2:	f0 e0       	ldi	r31, 0x00	; 0
+ 1c4:	ec 0f       	add	r30, r28
+ 1c6:	fd 1f       	adc	r31, r29
+ 1c8:	e0 0f       	add	r30, r16
+ 1ca:	f1 1f       	adc	r31, r17
+ 1cc:	80 81       	ld	r24, Z
+ 1ce:	0e 94 4e 00 	call	0x9c	; 0x9c <_Z26SPI_MasterTransmit_Receivec>
+		
+		if(data == 0x51){
+ 1d2:	81 35       	cpi	r24, 0x51	; 81
+ 1d4:	19 f4       	brne	.+6      	; 0x1dc <main+0xd2>
+			PORTC |= (1<<0);
+ 1d6:	98 b1       	in	r25, 0x08	; 8
+ 1d8:	91 60       	ori	r25, 0x01	; 1
+ 1da:	98 b9       	out	0x08, r25	; 8
+		}
+		if(data == 0x31){
+ 1dc:	81 33       	cpi	r24, 0x31	; 49
+ 1de:	19 f4       	brne	.+6      	; 0x1e6 <main+0xdc>
+			PORTC |= (1<<1);
+ 1e0:	98 b1       	in	r25, 0x08	; 8
+ 1e2:	92 60       	ori	r25, 0x02	; 2
+ 1e4:	98 b9       	out	0x08, r25	; 8
+		}
+		if(data == 0xAA){
+ 1e6:	8a 3a       	cpi	r24, 0xAA	; 170
+ 1e8:	31 f4       	brne	.+12     	; 0x1f6 <main+0xec>
+			PORTC &= ~(1<<0);
+ 1ea:	88 b1       	in	r24, 0x08	; 8
+ 1ec:	8e 7f       	andi	r24, 0xFE	; 254
+ 1ee:	88 b9       	out	0x08, r24	; 8
+			PORTC &= ~(1<<1);
+ 1f0:	88 b1       	in	r24, 0x08	; 8
+ 1f2:	8d 7f       	andi	r24, 0xFD	; 253
+ 1f4:	88 b9       	out	0x08, r24	; 8
+		}
+		PORTB |= (1<<CS_SoftCode); //pour mettre slave 1 a passive
+ 1f6:	85 b1       	in	r24, 0x05	; 5
+ 1f8:	82 60       	ori	r24, 0x02	; 2
+ 1fa:	85 b9       	out	0x05, r24	; 5
+ 1fc:	9f e3       	ldi	r25, 0x3F	; 63
+ 1fe:	2d e0       	ldi	r18, 0x0D	; 13
+ 200:	83 e0       	ldi	r24, 0x03	; 3
+ 202:	91 50       	subi	r25, 0x01	; 1
+ 204:	20 40       	sbci	r18, 0x00	; 0
+ 206:	80 40       	sbci	r24, 0x00	; 0
+ 208:	e1 f7       	brne	.-8      	; 0x202 <main+0xf8>
+ 20a:	00 c0       	rjmp	.+0      	; 0x20c <main+0x102>
+ 20c:	00 00       	nop
+		}
+		PORTB |= (1<<CS); //pour mettre slave 1 a passive
+		_delay_ms(1000);
+	}
+	
+	for (int i=0; i<4; i++)
+ 20e:	0f 5f       	subi	r16, 0xFF	; 255
+ 210:	1f 4f       	sbci	r17, 0xFF	; 255
+ 212:	ca cf       	rjmp	.-108    	; 0x1a8 <main+0x9e>
+		PORTB |= (1<<CS_SoftCode); //pour mettre slave 1 a passive
+		_delay_ms(1000);
+	}
+	
+	return(0);
+}
+ 214:	80 e0       	ldi	r24, 0x00	; 0
+ 216:	90 e0       	ldi	r25, 0x00	; 0
+ 218:	0f 90       	pop	r0
+ 21a:	0f 90       	pop	r0
+ 21c:	0f 90       	pop	r0
+ 21e:	df 91       	pop	r29
+ 220:	cf 91       	pop	r28
+ 222:	1f 91       	pop	r17
+ 224:	0f 91       	pop	r16
+ 226:	08 95       	ret
+
+00000228 <_exit>:
+ 228:	f8 94       	cli
+
+0000022a <__stop_program>:
+ 22a:	ff cf       	rjmp	.-2      	; 0x22a <__stop_program>
