@@ -1,0 +1,578 @@
+
+Slave_I2C.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00800100  000002f8  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         000002a4  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .comment      00000030  00000000  00000000  000002f8  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000328  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000070  00000000  00000000  00000364  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000b5e  00000000  00000000  000003d4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000774  00000000  00000000  00000f32  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000005be  00000000  00000000  000016a6  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  000000d4  00000000  00000000  00001c64  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000530  00000000  00000000  00001d38  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    000004fa  00000000  00000000  00002268  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000060  00000000  00000000  00002762  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
+   4:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+   8:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+   c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  10:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  14:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  18:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  1c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  20:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  24:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  28:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  2c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  30:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  34:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  38:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  3c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  40:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  44:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  48:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  4c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  50:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  54:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  58:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  5c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  60:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  64:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+
+00000068 <__ctors_end>:
+  68:	11 24       	eor	r1, r1
+  6a:	1f be       	out	0x3f, r1	; 63
+  6c:	cf ef       	ldi	r28, 0xFF	; 255
+  6e:	d8 e0       	ldi	r29, 0x08	; 8
+  70:	de bf       	out	0x3e, r29	; 62
+  72:	cd bf       	out	0x3d, r28	; 61
+  74:	0e 94 f7 00 	call	0x1ee	; 0x1ee <main>
+  78:	0c 94 50 01 	jmp	0x2a0	; 0x2a0 <_exit>
+
+0000007c <__bad_interrupt>:
+  7c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000080 <_Z5Blinkv>:
+	// TWINT = interrupt flag = quand le transmition complete? not sure mais cest un flag (so ici il est 1 cuz il a finit de transmettre un byte et il attent softcode application)
+	// TWSTO = in master mode il va faire un STOP condition
+	// TWEN = peremt de controler SDA et SCL line ==> quand il est a 0 la transmission est terminé
+	TWCR = (1<<TWINT)|(1<<TWSTO)|(1<<TWEN);
+	while(TWCR & (1<<TWSTO));//basicly wait until stop
+}
+  80:	80 e0       	ldi	r24, 0x00	; 0
+  82:	90 e0       	ldi	r25, 0x00	; 0
+  84:	82 30       	cpi	r24, 0x02	; 2
+  86:	91 05       	cpc	r25, r1
+  88:	04 f5       	brge	.+64     	; 0xca <_Z5Blinkv+0x4a>
+  8a:	28 b1       	in	r18, 0x08	; 8
+  8c:	21 60       	ori	r18, 0x01	; 1
+  8e:	28 b9       	out	0x08, r18	; 8
+  90:	28 b1       	in	r18, 0x08	; 8
+  92:	22 60       	ori	r18, 0x02	; 2
+  94:	28 b9       	out	0x08, r18	; 8
+  96:	2f e3       	ldi	r18, 0x3F	; 63
+  98:	3d e0       	ldi	r19, 0x0D	; 13
+  9a:	43 e0       	ldi	r20, 0x03	; 3
+  9c:	21 50       	subi	r18, 0x01	; 1
+  9e:	30 40       	sbci	r19, 0x00	; 0
+  a0:	40 40       	sbci	r20, 0x00	; 0
+  a2:	e1 f7       	brne	.-8      	; 0x9c <_Z5Blinkv+0x1c>
+  a4:	00 c0       	rjmp	.+0      	; 0xa6 <_Z5Blinkv+0x26>
+  a6:	00 00       	nop
+  a8:	28 b1       	in	r18, 0x08	; 8
+  aa:	2e 7f       	andi	r18, 0xFE	; 254
+  ac:	28 b9       	out	0x08, r18	; 8
+  ae:	28 b1       	in	r18, 0x08	; 8
+  b0:	2d 7f       	andi	r18, 0xFD	; 253
+  b2:	28 b9       	out	0x08, r18	; 8
+  b4:	2f e3       	ldi	r18, 0x3F	; 63
+  b6:	3d e0       	ldi	r19, 0x0D	; 13
+  b8:	43 e0       	ldi	r20, 0x03	; 3
+  ba:	21 50       	subi	r18, 0x01	; 1
+  bc:	30 40       	sbci	r19, 0x00	; 0
+  be:	40 40       	sbci	r20, 0x00	; 0
+  c0:	e1 f7       	brne	.-8      	; 0xba <_Z5Blinkv+0x3a>
+  c2:	00 c0       	rjmp	.+0      	; 0xc4 <_Z5Blinkv+0x44>
+  c4:	00 00       	nop
+  c6:	01 96       	adiw	r24, 0x01	; 1
+  c8:	dd cf       	rjmp	.-70     	; 0x84 <_Z5Blinkv+0x4>
+  ca:	08 95       	ret
+
+000000cc <_Z10I2C_statusv>:
+  cc:	80 91 b9 00 	lds	r24, 0x00B9	; 0x8000b9 <__TEXT_REGION_LENGTH__+0x7f80b9>
+  d0:	88 7f       	andi	r24, 0xF8	; 248
+  d2:	08 95       	ret
+
+000000d4 <_Z14I2C_Slave_Initc>:
+void I2C_Slave_Init(char slave_address)
+{
+	TWAR = slave_address;						/* Assign address in TWI address register */
+  d4:	80 93 ba 00 	sts	0x00BA, r24	; 0x8000ba <__TEXT_REGION_LENGTH__+0x7f80ba>
+	TWCR = (1<<TWEN) | (1<<TWEA) | (1<<TWINT);	/* Enable TWI, Enable ack generation, clear TWI interrupt */
+  d8:	84 ec       	ldi	r24, 0xC4	; 196
+  da:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__TEXT_REGION_LENGTH__+0x7f80bc>
+  de:	08 95       	ret
+
+000000e0 <_Z16I2C_Slave_Listenv>:
+	//ShortBlink(1);
+	//PORTC |= (1<<0);//<================LED
+	while (1)
+	{
+		//ShortBlink(1);
+		char status = I2C_status();
+  e0:	0e 94 66 00 	call	0xcc	; 0xcc <_Z10I2C_statusv>
+		
+		//while (1)			//ye ici le while loop etait useless + creer un probleme
+		//{
+		//ShortBlink(2);
+		//----------------------------------------
+		if (status == 0x60 || status == 0x68){
+  e4:	80 36       	cpi	r24, 0x60	; 96
+  e6:	71 f0       	breq	.+28     	; 0x104 <_Z16I2C_Slave_Listenv+0x24>
+  e8:	88 36       	cpi	r24, 0x68	; 104
+  ea:	79 f0       	breq	.+30     	; 0x10a <_Z16I2C_Slave_Listenv+0x2a>
+			return 0; // ici slave address recu + write bit et le 0x68 pour quand >> lost in arbitration lost??? aussi if TWE = 1, ACK bit will be sent
+			//important!!! mais des while loop pour read/write et apprend ce que le code fait ==> il reste just a faire code du slave pour les different write ack, read ack, write nack et read nack
+			//ici receive cuz cest le master qui write
+		}
+		//----------------------------------------
+		if (status == 0xA8 || status == 0xB0){
+  ec:	88 3a       	cpi	r24, 0xA8	; 168
+  ee:	81 f0       	breq	.+32     	; 0x110 <_Z16I2C_Slave_Listenv+0x30>
+  f0:	80 3b       	cpi	r24, 0xB0	; 176
+  f2:	89 f0       	breq	.+34     	; 0x116 <_Z16I2C_Slave_Listenv+0x36>
+			//PORTC |= (1<<0);//<================LED
+			return 1; // ici slave address recu + read bit et le 0xB0 pour quand >> lost in arbitration lost??? aussi if TWE = 1, ACK bit will be sent
+			//ici write cuz cest le master qui read
+		}
+		//----------------------------------------
+		if (status == 0xA0){
+  f4:	80 3a       	cpi	r24, 0xA0	; 160
+  f6:	a1 f7       	brne	.-24     	; 0xe0 <_Z16I2C_Slave_Listenv>
+			//ShortBlink(1);
+			TWCR |= (1<<TWINT);
+  f8:	ec eb       	ldi	r30, 0xBC	; 188
+  fa:	f0 e0       	ldi	r31, 0x00	; 0
+  fc:	80 81       	ld	r24, Z
+  fe:	80 68       	ori	r24, 0x80	; 128
+ 100:	80 83       	st	Z, r24
+			continue; //start condition repeated or stop condition while being addressed
+ 102:	ee cf       	rjmp	.-36     	; 0xe0 <_Z16I2C_Slave_Listenv>
+		//ShortBlink(2);
+		//----------------------------------------
+		if (status == 0x60 || status == 0x68){
+			//Blink();
+			//PORTC |= (1<<0);//<================LED
+			return 0; // ici slave address recu + write bit et le 0x68 pour quand >> lost in arbitration lost??? aussi if TWE = 1, ACK bit will be sent
+ 104:	80 e0       	ldi	r24, 0x00	; 0
+ 106:	90 e0       	ldi	r25, 0x00	; 0
+ 108:	08 95       	ret
+ 10a:	80 e0       	ldi	r24, 0x00	; 0
+ 10c:	90 e0       	ldi	r25, 0x00	; 0
+ 10e:	08 95       	ret
+		}
+		//----------------------------------------
+		if (status == 0xA8 || status == 0xB0){
+			//Blink();
+			//PORTC |= (1<<0);//<================LED
+			return 1; // ici slave address recu + read bit et le 0xB0 pour quand >> lost in arbitration lost??? aussi if TWE = 1, ACK bit will be sent
+ 110:	81 e0       	ldi	r24, 0x01	; 1
+ 112:	90 e0       	ldi	r25, 0x00	; 0
+ 114:	08 95       	ret
+ 116:	81 e0       	ldi	r24, 0x01	; 1
+ 118:	90 e0       	ldi	r25, 0x00	; 0
+			continue; //start condition repeated or stop condition while being addressed
+		}
+		//}
+		//lost in arbitration ==> master n'est plus un master? genre c'est comme le dernier byte a envoyer or some shit?
+	}
+}
+ 11a:	08 95       	ret
+
+0000011c <_Z19I2C_Slave_Transmmitc>:
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 11c:	e7 ea       	ldi	r30, 0xA7	; 167
+ 11e:	f1 e6       	ldi	r31, 0x61	; 97
+ 120:	31 97       	sbiw	r30, 0x01	; 1
+ 122:	f1 f7       	brne	.-4      	; 0x120 <_Z19I2C_Slave_Transmmitc+0x4>
+ 124:	00 c0       	rjmp	.+0      	; 0x126 <_Z19I2C_Slave_Transmmitc+0xa>
+ 126:	00 00       	nop
+
+int I2C_Slave_Transmmit(char data){	//faut mettre while et break pour le nack
+	//Blink();
+	_delay_ms(100);
+	TWDR = data;
+ 128:	80 93 bb 00 	sts	0x00BB, r24	; 0x8000bb <__TEXT_REGION_LENGTH__+0x7f80bb>
+	TWCR = (1<<TWEN) | (1<<TWINT) | (1<<TWEA); //ton probleme avec le slave transmit etait que tu avais pas mis TWEA comme idir avait pas besoin puisque il transferait juste comme un byte pour lire qqch
+ 12c:	84 ec       	ldi	r24, 0xC4	; 196
+ 12e:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__TEXT_REGION_LENGTH__+0x7f80bc>
+	while (!(TWCR & (1<<TWINT)));
+ 132:	80 91 bc 00 	lds	r24, 0x00BC	; 0x8000bc <__TEXT_REGION_LENGTH__+0x7f80bc>
+ 136:	88 23       	and	r24, r24
+ 138:	e4 f7       	brge	.-8      	; 0x132 <_Z19I2C_Slave_Transmmitc+0x16>
+	char status = I2C_status();
+ 13a:	0e 94 66 00 	call	0xcc	; 0xcc <_Z10I2C_statusv>
+	if (status == 0xA0){
+ 13e:	80 3a       	cpi	r24, 0xA0	; 160
+ 140:	41 f4       	brne	.+16     	; 0x152 <_Z19I2C_Slave_Transmmitc+0x36>
+		TWCR |= (1<<TWINT);
+ 142:	ec eb       	ldi	r30, 0xBC	; 188
+ 144:	f0 e0       	ldi	r31, 0x00	; 0
+ 146:	80 81       	ld	r24, Z
+ 148:	80 68       	ori	r24, 0x80	; 128
+ 14a:	80 83       	st	Z, r24
+		return 0; // ici qqch a fuck up dans start condition or stop condition no action est on clear le flag pour continuer transmition
+ 14c:	80 e0       	ldi	r24, 0x00	; 0
+ 14e:	90 e0       	ldi	r25, 0x00	; 0
+ 150:	08 95       	ret
+	}
+	if (status == 0xB8){
+ 152:	88 3b       	cpi	r24, 0xB8	; 184
+ 154:	39 f0       	breq	.+14     	; 0x164 <_Z19I2C_Slave_Transmmitc+0x48>
+		//ShortBlink(1);//<================LED
+		return 1; // ici data byte dans TWDR a été transmit et ACK has been received and if TWEA = 1 ACK va être reçu?
+	}
+	if (status == 0xC0){
+ 156:	80 3c       	cpi	r24, 0xC0	; 192
+ 158:	41 f0       	breq	.+16     	; 0x16a <_Z19I2C_Slave_Transmmitc+0x4e>
+		//ShortBlink(2);//<================LED
+		return 2; //ici data byte dans TWDR a été transmit et ACK has not been received and if TWEA = 1 ACK va être reçu?
+	}
+	if (status == 0xC8){ //PROBLEME!!!!!!! somehow NACK idk how check salae + aider du prof
+ 15a:	88 3c       	cpi	r24, 0xC8	; 200
+ 15c:	49 f4       	brne	.+18     	; 0x170 <_Z19I2C_Slave_Transmmitc+0x54>
+		return 3; //Last data byte in TWDR has been transmitted (TWEA = “0”); ACK has been received
+ 15e:	83 e0       	ldi	r24, 0x03	; 3
+ 160:	90 e0       	ldi	r25, 0x00	; 0
+ 162:	08 95       	ret
+		TWCR |= (1<<TWINT);
+		return 0; // ici qqch a fuck up dans start condition or stop condition no action est on clear le flag pour continuer transmition
+	}
+	if (status == 0xB8){
+		//ShortBlink(1);//<================LED
+		return 1; // ici data byte dans TWDR a été transmit et ACK has been received and if TWEA = 1 ACK va être reçu?
+ 164:	81 e0       	ldi	r24, 0x01	; 1
+ 166:	90 e0       	ldi	r25, 0x00	; 0
+ 168:	08 95       	ret
+	}
+	if (status == 0xC0){
+		//ShortBlink(2);//<================LED
+		return 2; //ici data byte dans TWDR a été transmit et ACK has not been received and if TWEA = 1 ACK va être reçu?
+ 16a:	82 e0       	ldi	r24, 0x02	; 2
+ 16c:	90 e0       	ldi	r25, 0x00	; 0
+ 16e:	08 95       	ret
+	}
+	if (status == 0xC8){ //PROBLEME!!!!!!! somehow NACK idk how check salae + aider du prof
+		return 3; //Last data byte in TWDR has been transmitted (TWEA = “0”); ACK has been received
+	} else {
+		return 4;
+ 170:	84 e0       	ldi	r24, 0x04	; 4
+ 172:	90 e0       	ldi	r25, 0x00	; 0
+	}
+}
+ 174:	08 95       	ret
+
+00000176 <_Z17I2C_Slave_Receiveb>:
+
+int I2C_Slave_Receive(bool ack){	//faut mettre while et break pour le nack
+	//PORTC |= (1<<0);//<================LED
+	if (ack == true){
+ 176:	88 23       	and	r24, r24
+ 178:	21 f0       	breq	.+8      	; 0x182 <_Z17I2C_Slave_Receiveb+0xc>
+		TWCR = (1<<TWEN) | (1<<TWINT) | (1<<TWEA);
+ 17a:	84 ec       	ldi	r24, 0xC4	; 196
+ 17c:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__TEXT_REGION_LENGTH__+0x7f80bc>
+ 180:	03 c0       	rjmp	.+6      	; 0x188 <_Z17I2C_Slave_Receiveb+0x12>
+		//PORTC |= (1<<0);//<================LED
+	} else {
+		//PORTC |= (1<<0);//<================LED
+		TWCR = (1<<TWEN) | (1<<TWINT);
+ 182:	84 e8       	ldi	r24, 0x84	; 132
+ 184:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__TEXT_REGION_LENGTH__+0x7f80bc>
+	}
+	//PORTC |= (1<<0);//<================LED
+	while (!(TWCR & (1<<TWINT)));
+ 188:	80 91 bc 00 	lds	r24, 0x00BC	; 0x8000bc <__TEXT_REGION_LENGTH__+0x7f80bc>
+ 18c:	88 23       	and	r24, r24
+ 18e:	e4 f7       	brge	.-8      	; 0x188 <_Z17I2C_Slave_Receiveb+0x12>
+	//PORTC |= (1<<0);//<================LED
+	char status = I2C_status();
+ 190:	0e 94 66 00 	call	0xcc	; 0xcc <_Z10I2C_statusv>
+	if (status == 0x80){
+ 194:	80 38       	cpi	r24, 0x80	; 128
+ 196:	61 f0       	breq	.+24     	; 0x1b0 <_Z17I2C_Slave_Receiveb+0x3a>
+		return 0; //ici data received + ack
+	}
+	if (status == 0x88){ //envoie pas de ack donc arret la transmition
+ 198:	88 38       	cpi	r24, 0x88	; 136
+ 19a:	69 f0       	breq	.+26     	; 0x1b6 <_Z17I2C_Slave_Receiveb+0x40>
+		return 1; //ici data received + nack
+	}
+	if (status == 0xA0){
+ 19c:	80 3a       	cpi	r24, 0xA0	; 160
+ 19e:	71 f4       	brne	.+28     	; 0x1bc <_Z17I2C_Slave_Receiveb+0x46>
+		TWCR |= (1<<TWINT);//communication fuck up so clear flag et recommence communication (not sure)
+ 1a0:	ec eb       	ldi	r30, 0xBC	; 188
+ 1a2:	f0 e0       	ldi	r31, 0x00	; 0
+ 1a4:	80 81       	ld	r24, Z
+ 1a6:	80 68       	ori	r24, 0x80	; 128
+ 1a8:	80 83       	st	Z, r24
+		return 2;
+ 1aa:	82 e0       	ldi	r24, 0x02	; 2
+ 1ac:	90 e0       	ldi	r25, 0x00	; 0
+ 1ae:	08 95       	ret
+	//PORTC |= (1<<0);//<================LED
+	while (!(TWCR & (1<<TWINT)));
+	//PORTC |= (1<<0);//<================LED
+	char status = I2C_status();
+	if (status == 0x80){
+		return 0; //ici data received + ack
+ 1b0:	80 e0       	ldi	r24, 0x00	; 0
+ 1b2:	90 e0       	ldi	r25, 0x00	; 0
+ 1b4:	08 95       	ret
+	}
+	if (status == 0x88){ //envoie pas de ack donc arret la transmition
+		return 1; //ici data received + nack
+ 1b6:	81 e0       	ldi	r24, 0x01	; 1
+ 1b8:	90 e0       	ldi	r25, 0x00	; 0
+ 1ba:	08 95       	ret
+	}
+	if (status == 0xA0){
+		TWCR |= (1<<TWINT);//communication fuck up so clear flag et recommence communication (not sure)
+		return 2;
+	} else return 3;
+ 1bc:	83 e0       	ldi	r24, 0x03	; 3
+ 1be:	90 e0       	ldi	r25, 0x00	; 0
+}
+ 1c0:	08 95       	ret
+
+000001c2 <_Z6actionc>:
+
+void action(char data){
+	switch(data){
+ 1c2:	84 34       	cpi	r24, 0x44	; 68
+ 1c4:	69 f0       	breq	.+26     	; 0x1e0 <_Z6actionc+0x1e>
+ 1c6:	85 35       	cpi	r24, 0x55	; 85
+ 1c8:	19 f0       	breq	.+6      	; 0x1d0 <_Z6actionc+0xe>
+ 1ca:	83 33       	cpi	r24, 0x33	; 51
+ 1cc:	79 f4       	brne	.+30     	; 0x1ec <_Z6actionc+0x2a>
+ 1ce:	04 c0       	rjmp	.+8      	; 0x1d8 <_Z6actionc+0x16>
+		case 0x55:{
+			PORTC |= (1<<0);//<================LED
+ 1d0:	88 b1       	in	r24, 0x08	; 8
+ 1d2:	81 60       	ori	r24, 0x01	; 1
+ 1d4:	88 b9       	out	0x08, r24	; 8
+			break;
+ 1d6:	08 95       	ret
+		}
+		case 0x33:{
+			PORTC |= (1<<1);//<================LED
+ 1d8:	88 b1       	in	r24, 0x08	; 8
+ 1da:	82 60       	ori	r24, 0x02	; 2
+ 1dc:	88 b9       	out	0x08, r24	; 8
+			break;
+ 1de:	08 95       	ret
+		}
+		case 0x44:{
+			PORTC &= ~(1<<0);//<================LED
+ 1e0:	88 b1       	in	r24, 0x08	; 8
+ 1e2:	8e 7f       	andi	r24, 0xFE	; 254
+ 1e4:	88 b9       	out	0x08, r24	; 8
+			PORTC &= ~(1<<1);//<================LED
+ 1e6:	88 b1       	in	r24, 0x08	; 8
+ 1e8:	8d 7f       	andi	r24, 0xFD	; 253
+ 1ea:	88 b9       	out	0x08, r24	; 8
+ 1ec:	08 95       	ret
+
+000001ee <main>:
+	
+	//order : | 0x55, 0x33, 0x44 | 0x33, 0x44 | 0x44 |
+}
+
+int main(void)
+{
+ 1ee:	cf 93       	push	r28
+ 1f0:	df 93       	push	r29
+ 1f2:	00 d0       	rcall	.+0      	; 0x1f4 <main+0x6>
+ 1f4:	00 d0       	rcall	.+0      	; 0x1f6 <main+0x8>
+ 1f6:	cd b7       	in	r28, 0x3d	; 61
+ 1f8:	de b7       	in	r29, 0x3e	; 62
+	/* initialiser le slave I2C */
+	I2C_Slave_Init(SLave_Address1);
+ 1fa:	80 e5       	ldi	r24, 0x50	; 80
+ 1fc:	0e 94 6a 00 	call	0xd4	; 0xd4 <_Z14I2C_Slave_Initc>
+	/* mettre les deux portes pour LED en sortie */
+	DDRC |= (1<<0)|(1<<1);
+ 200:	87 b1       	in	r24, 0x07	; 7
+ 202:	83 60       	ori	r24, 0x03	; 3
+ 204:	87 b9       	out	0x07, r24	; 7
+	/* test de lumière pour confirmer */
+	Blink();
+ 206:	0e 94 40 00 	call	0x80	; 0x80 <_Z5Blinkv>
+	
+	/* pour envoyer plusieurs char test */
+	char slave_data[] = {0x51,0x31,0x41,0x21};
+ 20a:	81 e5       	ldi	r24, 0x51	; 81
+ 20c:	89 83       	std	Y+1, r24	; 0x01
+ 20e:	81 e3       	ldi	r24, 0x31	; 49
+ 210:	8a 83       	std	Y+2, r24	; 0x02
+ 212:	81 e4       	ldi	r24, 0x41	; 65
+ 214:	8b 83       	std	Y+3, r24	; 0x03
+ 216:	81 e2       	ldi	r24, 0x21	; 33
+ 218:	8c 83       	std	Y+4, r24	; 0x04
+	bool ack = true;
+	
+	//PORTC |= (1<<0);//<================LED
+	while(1){
+		//ShortBlink(1);
+		switch(I2C_Slave_Listen()){
+ 21a:	0e 94 70 00 	call	0xe0	; 0xe0 <_Z16I2C_Slave_Listenv>
+ 21e:	00 97       	sbiw	r24, 0x00	; 0
+ 220:	19 f0       	breq	.+6      	; 0x228 <main+0x3a>
+ 222:	01 97       	sbiw	r24, 0x01	; 1
+ 224:	e1 f0       	breq	.+56     	; 0x25e <main+0x70>
+ 226:	38 c0       	rjmp	.+112    	; 0x298 <main+0xaa>
+ 228:	10 e0       	ldi	r17, 0x00	; 0
+			case 0:{ //slave receive
+				//PORTC |= (1<<1);//<================LED
+				//Blink();
+				while (1){
+					int status = I2C_Slave_Receive(ack);
+ 22a:	81 e0       	ldi	r24, 0x01	; 1
+ 22c:	0e 94 bb 00 	call	0x176	; 0x176 <_Z17I2C_Slave_Receiveb>
+					
+					if (status == 2 || status == 3 || data == 0x22){ //qqch fuck up arret la reception ou ya plus rien a recevoir
+ 230:	9c 01       	movw	r18, r24
+ 232:	22 50       	subi	r18, 0x02	; 2
+ 234:	31 09       	sbc	r19, r1
+ 236:	22 30       	cpi	r18, 0x02	; 2
+ 238:	31 05       	cpc	r19, r1
+ 23a:	70 f1       	brcs	.+92     	; 0x298 <main+0xaa>
+ 23c:	12 32       	cpi	r17, 0x22	; 34
+ 23e:	61 f1       	breq	.+88     	; 0x298 <main+0xaa>
+						//ShortBlink(1);
+						break;
+					}
+					//PORTC |= (1<<1);//<================LED
+					if (status == 0){ //ack envoyer so continue la reception
+ 240:	00 97       	sbiw	r24, 0x00	; 0
+ 242:	31 f4       	brne	.+12     	; 0x250 <main+0x62>
+						data = TWDR; //ici jsp pourquoi on peut pas get la variable or du loop et trop compliqué comprendre commen enregister les data dans une list
+ 244:	10 91 bb 00 	lds	r17, 0x00BB	; 0x8000bb <__TEXT_REGION_LENGTH__+0x7f80bb>
+						action(data);
+ 248:	81 2f       	mov	r24, r17
+ 24a:	0e 94 e1 00 	call	0x1c2	; 0x1c2 <_Z6actionc>
+						continue;
+ 24e:	ed cf       	rjmp	.-38     	; 0x22a <main+0x3c>
+					}
+					if (status == 1){
+ 250:	01 97       	sbiw	r24, 0x01	; 1
+ 252:	59 f7       	brne	.-42     	; 0x22a <main+0x3c>
+						data = TWDR; //nack envoyer so arret la reception
+ 254:	80 91 bb 00 	lds	r24, 0x00BB	; 0x8000bb <__TEXT_REGION_LENGTH__+0x7f80bb>
+						action(data);
+ 258:	0e 94 e1 00 	call	0x1c2	; 0x1c2 <_Z6actionc>
+						break;
+ 25c:	1d c0       	rjmp	.+58     	; 0x298 <main+0xaa>
+	bool ack = true;
+	
+	//PORTC |= (1<<0);//<================LED
+	while(1){
+		//ShortBlink(1);
+		switch(I2C_Slave_Listen()){
+ 25e:	00 e0       	ldi	r16, 0x00	; 0
+ 260:	10 e0       	ldi	r17, 0x00	; 0
+				break;
+			}
+			case  1:{ //slave write
+				//TWCR &= ~ (TWINT);
+				//Blink(); //PROBLEME!!!!!!! le slave arret pas de transmettre du bs au master apres le premier char   !!!essay de faire ...start condition . byte . stop condition...start condition . byte . stop condition...
+				for (int i=0;i<4;i++){ //PROBLEME!!!!!!!!!!!! le loop fait juste le tour 1 fois et non 3 fois jsp pourquoi comme quand i = 1 il arret
+ 262:	04 30       	cpi	r16, 0x04	; 4
+ 264:	11 05       	cpc	r17, r1
+ 266:	b4 f4       	brge	.+44     	; 0x294 <main+0xa6>
+					//ShortBlink(2);
+					//PORTC |= (1<<1);//<================LED
+					int status = I2C_Slave_Transmmit(slave_data[i]);
+ 268:	e1 e0       	ldi	r30, 0x01	; 1
+ 26a:	f0 e0       	ldi	r31, 0x00	; 0
+ 26c:	ec 0f       	add	r30, r28
+ 26e:	fd 1f       	adc	r31, r29
+ 270:	e0 0f       	add	r30, r16
+ 272:	f1 1f       	adc	r31, r17
+ 274:	80 81       	ld	r24, Z
+ 276:	0e 94 8e 00 	call	0x11c	; 0x11c <_Z19I2C_Slave_Transmmitc>
+					//_delay_ms(100);
+					//PORTC |= (1<<1);//<================LED
+					if (status == 0 || status == 2  || status == 3 || status == 4){  //ici data transmit + nack received donc arret la transmition or qqch a fuck up
+ 27a:	00 97       	sbiw	r24, 0x00	; 0
+ 27c:	59 f0       	breq	.+22     	; 0x294 <main+0xa6>
+ 27e:	82 30       	cpi	r24, 0x02	; 2
+ 280:	91 05       	cpc	r25, r1
+ 282:	41 f0       	breq	.+16     	; 0x294 <main+0xa6>
+ 284:	83 30       	cpi	r24, 0x03	; 3
+ 286:	91 05       	cpc	r25, r1
+ 288:	29 f0       	breq	.+10     	; 0x294 <main+0xa6>
+ 28a:	04 97       	sbiw	r24, 0x04	; 4
+ 28c:	19 f0       	breq	.+6      	; 0x294 <main+0xa6>
+				break;
+			}
+			case  1:{ //slave write
+				//TWCR &= ~ (TWINT);
+				//Blink(); //PROBLEME!!!!!!! le slave arret pas de transmettre du bs au master apres le premier char   !!!essay de faire ...start condition . byte . stop condition...start condition . byte . stop condition...
+				for (int i=0;i<4;i++){ //PROBLEME!!!!!!!!!!!! le loop fait juste le tour 1 fois et non 3 fois jsp pourquoi comme quand i = 1 il arret
+ 28e:	0f 5f       	subi	r16, 0xFF	; 255
+ 290:	1f 4f       	sbci	r17, 0xFF	; 255
+ 292:	e7 cf       	rjmp	.-50     	; 0x262 <main+0x74>
+						//ShortBlink(2);
+						continue; //ici data transmit + ack received
+					}
+					//Blink();
+				}
+				TWCR = 0x00; //attention <=============
+ 294:	10 92 bc 00 	sts	0x00BC, r1	; 0x8000bc <__TEXT_REGION_LENGTH__+0x7f80bc>
+		//ShortBlink(2);
+		//TWCR = 0x00;
+		//_delay_ms(10);
+		//_delay_ms(1000); //ye quand tu met le delay de 1 sec ca fuck up jsp pourquoi => maybe ca ralenti le slave trop et peut pas acknoledge in time???
+		/* initialiser le slave I2C */
+		I2C_Slave_Init(SLave_Address1); //<=== tu dois reinitializer les I2c slave cuz ta basicly desactivé avec TWCR = 0x00; en haut qui est nécessaire sinon le slave (not sure) garde le controle du Two Wire interface et le master peut pas faire un stop condition
+ 298:	80 e5       	ldi	r24, 0x50	; 80
+ 29a:	0e 94 6a 00 	call	0xd4	; 0xd4 <_Z14I2C_Slave_Initc>
+	
+	//ici true = ack et false = nack
+	bool ack = true;
+	
+	//PORTC |= (1<<0);//<================LED
+	while(1){
+ 29e:	bd cf       	rjmp	.-134    	; 0x21a <main+0x2c>
+
+000002a0 <_exit>:
+ 2a0:	f8 94       	cli
+
+000002a2 <__stop_program>:
+ 2a2:	ff cf       	rjmp	.-2      	; 0x2a2 <__stop_program>
